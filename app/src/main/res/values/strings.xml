@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">RayMovie</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="main_title">Pop Movies</string>
+    <string name="title_activity_movie_detail">Movie Detail</string>
+    <string name="setting_sort_order">Sort Order</string>
+    <string name="sort_order_popularity_desc">popularity.desc</string>
+    <string name="sort_order_average_desc">vote_average.desc</string>
+    <string name="poseter">http://image.tmdb.org/t/p/w185/</string>
+</resources>
