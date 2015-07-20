@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class MovieDetailActivityFragment extends Fragment {
 
     private String movieId;
     private GridLayout mGridLayout;
+    private LinearLayout lProgress;
     private JSONObject movieDetails;
 
     public MovieDetailActivityFragment() {
@@ -46,6 +48,13 @@ public class MovieDetailActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
+
+        lProgress = (LinearLayout) rootView.findViewById(R.id.detail_progress);
+        lProgress.setVisibility(View.VISIBLE);
+        mGridLayout = (GridLayout) rootView.findViewById(R.id.detail_grid);
+        mGridLayout.setUseDefaultMargins(false);
+        mGridLayout.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
+//        mGridLayout.setRowOrderPreserved(false);
 
 //        Intent intent = getActivity().getIntent();
 //        if(intent != null){
@@ -106,13 +115,16 @@ public class MovieDetailActivityFragment extends Fragment {
 //String movieId, String movieTitle, String poster_url, String release, String rate, String desc)
             return new MovieDetail(jsonObject.getString(MOVIE_ID),
                     jsonObject.getString(MOVIE_TITLE),
-                    jsonObject.getString(MOVIE_POSTER_PATH),
+                    getActivity().getResources().getString(R.string.poseter_base_url) + jsonObject.getString(MOVIE_POSTER_PATH),
                     jsonObject.getString(MOVIE_RELEASE_DATE),
                     jsonObject.getString(MOVIE_VOTE_AVERAGE),
                     jsonObject.getString(MOVIE_OVERVIEW));
         }
 
-
+        @Override
+        protected void onPreExecute() {
+            lProgress.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected MovieDetail doInBackground(String... params) {
@@ -126,16 +138,14 @@ public class MovieDetailActivityFragment extends Fragment {
 
             String movieJsonStr = null;
 
-
             final String TMDB_BASE_URL = "http://api.themoviedb.org/3/movie/";
             final String KEY_PARAM = "api_key";
 
-//            String type = "popularity.desc"; //vote_average.desc
 
             String id = params[0];
 
 
-            String API_KEY = "fe48c1c18c1a17e4ab15ed99b02fc412";
+            String API_KEY = getActivity().getResources().getString(R.string.api_key);
 
             Uri buildUri = Uri.parse(TMDB_BASE_URL).buildUpon()
                     .appendPath(id)
@@ -169,7 +179,7 @@ public class MovieDetailActivityFragment extends Fragment {
                 }
                 movieJsonStr = buffer.toString();
 
-                Log.v(LOG_TAG, "INDV JSON: " + movieJsonStr);
+//                Log.v(LOG_TAG, "INDV JSON: " + movieJsonStr);
 
             } catch (MalformedURLException e) {
                 Log.e(LOG_TAG, "Error: " + e);
@@ -211,19 +221,23 @@ public class MovieDetailActivityFragment extends Fragment {
             Log.d(LOG_TAG, "DETAILS URL: " + movieDetail.getPoster_url());
             Glide.with(getActivity()) //
                     .load(movieDetail.getPoster_url())
+                    .centerCrop()
                     .into(imageView);
 
             TextView release = (TextView) getActivity().findViewById(R.id.detail_movie_release);
             release.setText(movieDetail.getRelease());
 
             TextView rate = (TextView) getActivity().findViewById(R.id.detail_movie_rate);
-            rate.setText(movieDetail.getRate());
+            rate.setText(movieDetail.getRate() + getActivity().getResources().getString(R.string.average_weight_total));
 
             TextView desc = (TextView) getActivity().findViewById(R.id.detail_movie_desc);
-            desc.setText(movieDetail.getDesc());
+            String descText = getActivity().getResources().getString(R.string.empty_description);
+            if(!movieDetail.getDesc().isEmpty()){
+                descText = movieDetail.getDesc();
+            }
+            desc.setText(descText);
 
-
-            super.onPostExecute(movieDetail);
+            lProgress.setVisibility(View.GONE);
         }
     }
 }

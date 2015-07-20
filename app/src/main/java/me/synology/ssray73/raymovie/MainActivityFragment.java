@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -41,10 +42,10 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-    private final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
     GridviewThumbnailAdapter movieAdapter;
-    private ProgressBar mProgressBar;
+//    private ProgressBar mProgressBar;
+    private LinearLayout mProgress;
     private GridView mGridView;
 
     public MainActivityFragment() {
@@ -58,7 +59,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.debug_refresh, menu);
+//        inflater.inflate(R.menu.debug_refresh, menu);
     }
 
     @Override
@@ -78,6 +79,15 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+
+//        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+//        mProgressBar.setVisibility(View.VISIBLE);
+
+        mProgress = (LinearLayout) rootView.findViewById(R.id.main_progress);
+        mProgress.setVisibility(View.VISIBLE);
         String[] urls = {
                 "http://image.tmdb.org/t/p/w185//uXZYawqUsChGSj54wcuBtEdUJbh.jpg",
                 "http://image.tmdb.org/t/p/w185//5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg",
@@ -125,23 +135,20 @@ public class MainActivityFragment extends Fragment {
                 "118340"
         };
 
+
         ArrayList<String> movieUrls = new ArrayList<String>(Arrays.asList(urls));
         ArrayList<String> movieIds = new ArrayList<String>(Arrays.asList(ids));
         movieAdapter = new GridviewThumbnailAdapter(
                 getActivity(), movieUrls, movieIds);
 
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-        mProgressBar.setVisibility(View.VISIBLE);
 
         mGridView = (GridView) rootView.findViewById(R.id.gridview_movie);
         mGridView.setAdapter(movieAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), position + " - " + movieAdapter.getMovieId(position), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), position + " - " + movieAdapter.getMovieId(position), Toast.LENGTH_SHORT).show();
 
                 String movieId = movieAdapter.getMovieId(position);
                 Intent intent = new Intent(getActivity(), MovieDetailActivity.class).putExtra(Intent.EXTRA_TEXT, movieId);
@@ -166,6 +173,8 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
         updateMovie();
     }
+
+
 
     public class FetchMovieTask extends AsyncTask<String, Void, JSONArray>{
 
@@ -193,7 +202,7 @@ public class MainActivityFragment extends Fragment {
 
             for(int i = 0; i < moviesArray.length(); i ++){
                 JSONObject movie = moviesArray.getJSONObject(i);
-                movie.put(MOVIE_POSTER_PATH, POSTER_BASE_URL + movie.getString(MOVIE_POSTER_PATH));
+                movie.put(MOVIE_POSTER_PATH, getActivity().getResources().getString(R.string.poseter_base_url) + movie.getString(MOVIE_POSTER_PATH));
 //                Log.d(LOG_TAG, "ID: " + movie.getString(MOVIE_ID) + " path: " + "http://image.tmdb.org/t/p/w185/" + movie.getString(MOVIE_POSTER_PATH));
 
 
@@ -208,8 +217,9 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mProgress.setVisibility(View.VISIBLE);
 //            mGridView.setVisibility(View.GONE);
-            mProgressBar.setVisibility(View.VISIBLE);
+//            mProgressBar.setVisibility(View.VISIBLE);
 
         }
 
@@ -236,7 +246,8 @@ public class MainActivityFragment extends Fragment {
             String type = params[0];
 
 
-            String API_KEY = "fe48c1c18c1a17e4ab15ed99b02fc412";
+
+            String API_KEY = getActivity().getResources().getString(R.string.api_key);
 
             Uri buildUri = Uri.parse(TMDB_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, type)
@@ -321,7 +332,8 @@ public class MainActivityFragment extends Fragment {
 
             }
             mGridView.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.GONE);
+//            mProgressBar.setVisibility(View.GONE);
+            mProgress.setVisibility(View.GONE);
         }
     }
 
