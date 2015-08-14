@@ -1,11 +1,14 @@
 package me.synology.ssray73.raymovie;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -34,10 +38,13 @@ import java.net.URL;
  */
 public class MovieDetailActivityFragment extends Fragment {
 
+    private final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
     private String movieId;
     private GridLayout mGridLayout;
     private LinearLayout lProgress;
-    private JSONObject movieDetails;
+    //    private JSONObject movieDetails;
+    private MovieDetail movieDetail;
+
 
     public MovieDetailActivityFragment() {
     }
@@ -54,24 +61,6 @@ public class MovieDetailActivityFragment extends Fragment {
         mGridLayout = (GridLayout) rootView.findViewById(R.id.detail_grid);
         mGridLayout.setUseDefaultMargins(false);
         mGridLayout.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
-//        mGridLayout.setRowOrderPreserved(false);
-
-//        Intent intent = getActivity().getIntent();
-//        if(intent != null){
-//            if (intent.hasExtra(Intent.EXTRA_TEXT)) {
-//                movieId = intent.getStringExtra(Intent.EXTRA_TEXT);
-//                TextView titleTextView = (TextView) rootView.findViewById(R.id.detail_movie_title);
-//                titleTextView.setText(posterUrl);
-//
-//                ImageView posterImageView = (ImageView) rootView.findViewById(R.id.detail_movie_poster);
-//                if(posterImageView == null) {
-//                    posterImageView = new ImageView(getActivity());
-//                }
-//                Picasso.with(getActivity()) //
-//                        .load(posterUrl)
-//                        .into(posterImageView);
-//            }
-//        }
 
         return rootView;
     }
@@ -83,18 +72,107 @@ public class MovieDetailActivityFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            if (intent.hasExtra(Intent.EXTRA_TEXT)) {
-                movieId = intent.getStringExtra(Intent.EXTRA_TEXT);
-            }
-        }
-        fetchDetails();
-
-
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(LOG_TAG, "DETAIL save state");
+        outState.putParcelable("moviedetail", movieDetail);
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        ImageView imageView = (ImageView) getActivity().findViewById(R.id.detail_movie_poster);
+        Log.d(LOG_TAG, "DETAIL image width: " + imageView.getWidth() + " height: " + imageView.getHeight());
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            Log.d(LOG_TAG, "DETAIL retore state");
+            // Restore last state for checked position.
+            movieDetail = savedInstanceState.getParcelable("moviedetail");
+            drawLayout(movieDetail);
+        }
+        {
+            Intent intent = getActivity().getIntent();
+            if (intent != null) {
+                if (intent.hasExtra(Intent.EXTRA_TEXT)) {
+                    movieId = intent.getStringExtra(Intent.EXTRA_TEXT);
+                }
+            }
+            fetchDetails();
+
+        }
+    }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        Intent intent = getActivity().getIntent();
+//        if (intent != null) {
+//            if (intent.hasExtra(Intent.EXTRA_TEXT)) {
+//                movieId = intent.getStringExtra(Intent.EXTRA_TEXT);
+//            }
+//        }
+//        fetchDetails();
+//
+//    }
+
+    public void drawLayout(MovieDetail movieDetail) {
+        if(movieDetail != null) {
+            lProgress.setVisibility(View.VISIBLE);
+            TextView movieTitle = (TextView) getActivity().findViewById(R.id.detail_movie_title);
+            movieTitle.setText(movieDetail.getMovieTitle());
+
+            ImageView imageView = (ImageView) getActivity().findViewById(R.id.detail_movie_poster);
+
+//        GridLayout grid = (GridLayout) imageView.getParent();
+
+            Log.d(LOG_TAG, "DETAILS URL: " + movieDetail.getPoster_url());
+            Log.d(LOG_TAG, "DETAIL screen: " + getResources().getConfiguration().orientation);
+            int orientation = getResources().getConfiguration().orientation;
+            int poster_width = 450;
+            switch (orientation) {
+                case 1:
+                    poster_width = 500;
+                    break;
+                case 2:
+                    poster_width = 800;
+                    break;
+                default:
+                    break;
+            }
+            int poster_height = (int) (poster_width * 1.5);
+
+            Glide.with(this) //
+                    .load(movieDetail.getPoster_url())
+                    .animate(R.anim.abc_fade_in)
+                    .override(poster_width, poster_height)
+//                .fitCenter()
+                    .centerCrop()
+                    .into(imageView);
+//        Log.d(LOG_TAG, "DETAIL grid 2 width: " + grid.getWidth() + " height: " + grid.getHeight());
+            Log.d(LOG_TAG, "DETAIL image 2 width: " + imageView.getWidth() + " height: " + imageView.getHeight());
+            TextView release = (TextView) getActivity().findViewById(R.id.detail_movie_release);
+            release.setText(movieDetail.getRelease());
+
+            TextView rate = (TextView) getActivity().findViewById(R.id.detail_movie_rate);
+            rate.setText(movieDetail.getRate() + getActivity().getResources().getString(R.string.average_weight_total));
+
+            TextView desc = (TextView) getActivity().findViewById(R.id.detail_movie_desc);
+            String descText = getActivity().getResources().getString(R.string.empty_description);
+            if (!movieDetail.getDesc().isEmpty()) {
+                descText = movieDetail.getDesc();
+            }
+            desc.setText(descText);
+
+            lProgress.setVisibility(View.GONE);
+        }else {
+            lProgress.setVisibility(View.VISIBLE);
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.fetch_data_fail), Toast.LENGTH_SHORT).show();
+            NavUtils.navigateUpFromSameTask(getActivity());
+            lProgress.setVisibility(View.GONE);
+        }
+    }
+
+
+
 
     public class FetchMovieDetailsTask extends AsyncTask<String, Void, MovieDetail> {
         private final String LOG_TAG = FetchMovieDetailsTask.class.getSimpleName();
@@ -110,20 +188,23 @@ public class MovieDetailActivityFragment extends Fragment {
 
 
         private MovieDetail getMovieDetailFromJson(String jsonStr) throws JSONException {
+            if (jsonStr != null) {
+                JSONObject jsonObject = new JSONObject(jsonStr);
 
-            JSONObject jsonObject = new JSONObject(jsonStr);
 //String movieId, String movieTitle, String poster_url, String release, String rate, String desc)
-            return new MovieDetail(jsonObject.getString(MOVIE_ID),
-                    jsonObject.getString(MOVIE_TITLE),
-                    getActivity().getResources().getString(R.string.poseter_base_url) + jsonObject.getString(MOVIE_POSTER_PATH),
-                    jsonObject.getString(MOVIE_RELEASE_DATE),
-                    jsonObject.getString(MOVIE_VOTE_AVERAGE),
-                    jsonObject.getString(MOVIE_OVERVIEW));
+                return new MovieDetail(jsonObject.getString(MOVIE_ID),
+                        jsonObject.getString(MOVIE_TITLE),
+                        getActivity().getResources().getString(R.string.poseter_base_url) + jsonObject.getString(MOVIE_POSTER_PATH),
+                        jsonObject.getString(MOVIE_RELEASE_DATE),
+                        jsonObject.getString(MOVIE_VOTE_AVERAGE),
+                        jsonObject.getString(MOVIE_OVERVIEW));
+            }
+            return null;
         }
 
         @Override
         protected void onPreExecute() {
-            lProgress.setVisibility(View.VISIBLE);
+//            lProgress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -211,33 +292,11 @@ public class MovieDetailActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(MovieDetail movieDetail) {
-            TextView movieTitle = (TextView) getActivity().findViewById(R.id.detail_movie_title);
-            movieTitle.setText(movieDetail.getMovieTitle());
+        protected void onPostExecute(MovieDetail detail) {
 
-            ImageView imageView = (ImageView) getActivity().findViewById(R.id.detail_movie_poster);
+                movieDetail = detail;
+                drawLayout(detail);
 
-
-            Log.d(LOG_TAG, "DETAILS URL: " + movieDetail.getPoster_url());
-            Glide.with(getActivity()) //
-                    .load(movieDetail.getPoster_url())
-                    .centerCrop()
-                    .into(imageView);
-
-            TextView release = (TextView) getActivity().findViewById(R.id.detail_movie_release);
-            release.setText(movieDetail.getRelease());
-
-            TextView rate = (TextView) getActivity().findViewById(R.id.detail_movie_rate);
-            rate.setText(movieDetail.getRate() + getActivity().getResources().getString(R.string.average_weight_total));
-
-            TextView desc = (TextView) getActivity().findViewById(R.id.detail_movie_desc);
-            String descText = getActivity().getResources().getString(R.string.empty_description);
-            if(!movieDetail.getDesc().isEmpty()){
-                descText = movieDetail.getDesc();
-            }
-            desc.setText(descText);
-
-            lProgress.setVisibility(View.GONE);
         }
     }
 }

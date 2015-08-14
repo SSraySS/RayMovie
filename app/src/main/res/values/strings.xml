@@ -11,4 +11,5 @@
     <string name="average_weight_total" translatable="false"> / 10</string>
     <string name="api_key" translatable="false">fe48c1c18c1a17e4ab15ed99b02fc412</string>
     <string name="empty_description">No description available.</string>
+    <string name="fetch_data_fail">Cannot connect to the movie database, please make sure you have Internet connection.</string>
 </resources>

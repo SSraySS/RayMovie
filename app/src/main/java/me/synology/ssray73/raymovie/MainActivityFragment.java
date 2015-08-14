@@ -1,12 +1,16 @@
 package me.synology.ssray73.raymovie;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,7 +48,7 @@ public class MainActivityFragment extends Fragment {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     GridviewThumbnailAdapter movieAdapter;
-//    private ProgressBar mProgressBar;
+    //    private ProgressBar mProgressBar;
     private LinearLayout mProgress;
     private GridView mGridView;
 
@@ -67,7 +71,7 @@ public class MainActivityFragment extends Fragment {
 
         Log.v(LOG_TAG, "----------------------------Action menu");
         int id = item.getItemId();
-        if (id == R.id.action_referesh){
+        if (id == R.id.action_referesh) {
             updateMovie();
             return true;
         }
@@ -81,10 +85,6 @@ public class MainActivityFragment extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-
-//        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-//        mProgressBar.setVisibility(View.VISIBLE);
 
         mProgress = (LinearLayout) rootView.findViewById(R.id.main_progress);
         mProgress.setVisibility(View.VISIBLE);
@@ -142,7 +142,6 @@ public class MainActivityFragment extends Fragment {
                 getActivity(), movieUrls, movieIds);
 
 
-
         mGridView = (GridView) rootView.findViewById(R.id.gridview_movie);
         mGridView.setAdapter(movieAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -161,11 +160,11 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    public void updateMovie(){
-            FetchMovieTask movieTask = new FetchMovieTask();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String sort_pref = prefs.getString("movie_sort_order", "popularity.desc");
-            movieTask.execute(sort_pref);
+    public void updateMovie() {
+        FetchMovieTask movieTask = new FetchMovieTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sort_pref = prefs.getString("movie_sort_order", "popularity.desc");
+        movieTask.execute(sort_pref);
     }
 
     @Override
@@ -175,8 +174,7 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-
-    public class FetchMovieTask extends AsyncTask<String, Void, JSONArray>{
+    public class FetchMovieTask extends AsyncTask<String, Void, JSONArray> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
@@ -190,25 +188,22 @@ public class MainActivityFragment extends Fragment {
         final String MOVIE_VOTE_COUNT = "vote_count";
 
 
+
+
         private JSONArray getMovieDataFromJson(String movieJsonStr) throws JSONException {
-
-
-
-
-            JSONObject moviesJson = new JSONObject(movieJsonStr);
-            JSONArray moviesArray = moviesJson.getJSONArray(MOVIE_RESULT);
+            if ( movieJsonStr != null) {
+                JSONObject moviesJson = new JSONObject(movieJsonStr);
+                JSONArray moviesArray = moviesJson.getJSONArray(MOVIE_RESULT);
 
 //            Log.d(LOG_TAG, "Movies list contains: " + moviesArray.length());
 
-            for(int i = 0; i < moviesArray.length(); i ++){
-                JSONObject movie = moviesArray.getJSONObject(i);
-                movie.put(MOVIE_POSTER_PATH, getActivity().getResources().getString(R.string.poseter_base_url) + movie.getString(MOVIE_POSTER_PATH));
-//                Log.d(LOG_TAG, "ID: " + movie.getString(MOVIE_ID) + " path: " + "http://image.tmdb.org/t/p/w185/" + movie.getString(MOVIE_POSTER_PATH));
-
-
-            }
-            if (moviesArray.length() > 0){
-                return moviesArray;
+                for (int i = 0; i < moviesArray.length(); i++) {
+                    JSONObject movie = moviesArray.getJSONObject(i);
+                    movie.put(MOVIE_POSTER_PATH, getActivity().getResources().getString(R.string.poseter_base_url) + movie.getString(MOVIE_POSTER_PATH));
+                }
+                if (moviesArray.length() > 0) {
+                    return moviesArray;
+                }
             }
             return null;
 
@@ -218,15 +213,13 @@ public class MainActivityFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             mProgress.setVisibility(View.VISIBLE);
-//            mGridView.setVisibility(View.GONE);
-//            mProgressBar.setVisibility(View.VISIBLE);
 
         }
 
         @Override
         protected JSONArray doInBackground(String... params) {
 
-            if (params.length ==0 ){
+            if (params.length == 0) {
                 return null;
             }
 
@@ -236,15 +229,12 @@ public class MainActivityFragment extends Fragment {
             String movieJsonStr = null;
 
 
-
             final String TMDB_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
             final String SORT_PARAM = "sort_by";
             final String KEY_PARAM = "api_key";
 
-//            String type = "popularity.desc"; //vote_average.desc
 
             String type = params[0];
-
 
 
             String API_KEY = getActivity().getResources().getString(R.string.api_key);
@@ -263,19 +253,19 @@ public class MainActivityFragment extends Fragment {
 
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
-                if(inputStream == null){
+                if (inputStream == null) {
                     return null;
                 }
 
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
-                while ((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     buffer.append(line + "\n");
                 }
 
 
-                if(buffer.length()==0){
+                if (buffer.length() == 0) {
                     return null;
                 }
                 movieJsonStr = buffer.toString();
@@ -289,10 +279,10 @@ public class MainActivityFragment extends Fragment {
                 Log.e(LOG_TAG, "Error: " + e);
                 e.printStackTrace();
             } finally {
-                if(urlConnection != null){
+                if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
-                if(reader != null){
+                if (reader != null) {
                     try {
                         reader.close();
                     } catch (IOException e) {
@@ -313,26 +303,26 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(JSONArray jsonArray) {
-            if(jsonArray != null){
+            if (jsonArray != null) {
                 try {
-                    ArrayList<String> urls = new  ArrayList<String>();
+                    ArrayList<String> urls = new ArrayList<String>();
                     ArrayList<String> movieIds = new ArrayList<String>();
-                    for(int i = 0; i < jsonArray.length(); i++){
-                            JSONObject movieJson = (JSONObject) jsonArray.get(i);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject movieJson = (JSONObject) jsonArray.get(i);
                         urls.add(movieJson.getString(MOVIE_POSTER_PATH));
                         movieIds.add(movieJson.getString(MOVIE_ID));
                     }
-//                    movieAdapter = new GridviewThumbnailAdapter(
-//                            getActivity(), urls);
                     movieAdapter.update(urls, movieIds);
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
                     e.printStackTrace();
                 }
 
+            }else{
+                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.fetch_data_fail), Toast.LENGTH_SHORT).show();
+
             }
             mGridView.setVisibility(View.VISIBLE);
-//            mProgressBar.setVisibility(View.GONE);
             mProgress.setVisibility(View.GONE);
         }
     }
