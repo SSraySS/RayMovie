@@ -1,9 +1,13 @@
-package me.synology.ssray73.raymovie;
+package me.synology.ssray73.raymovie.object;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+
+import static me.synology.ssray73.raymovie.object.MovieReview.*;
 
 /**
  * Created by raymond on 15/7/15.
@@ -28,13 +32,21 @@ public class MovieDetail implements Parcelable {
     @SerializedName("overview")
     String desc;
 
-    public MovieDetail(String movieId, String movieTitle, String poster_url, String release, String rate, String desc) {
+    ArrayList<MovieReview> reviews;
+
+    ArrayList<MovieTrailer> trailers;
+
+    public MovieDetail(String movieId, String movieTitle, String poster_url, String release,
+                       String rate, String desc, ArrayList<MovieReview> reviews,
+                       ArrayList<MovieTrailer> trailers) {
         this.movieId = movieId;
         this.movieTitle = movieTitle;
         this.poster_url = poster_url;
         this.release = release;
         this.rate = rate;
         this.desc = desc;
+        this.reviews = reviews;
+        this.trailers = trailers;
     }
 
     private MovieDetail(Parcel in) {
@@ -44,6 +56,9 @@ public class MovieDetail implements Parcelable {
         release = in.readString();
         rate = in.readString();
         desc = in.readString();
+        in.readTypedList(reviews, MovieReview.CREATOR);
+        in.readTypedList(trailers, MovieTrailer.CREATOR);
+
     }
 
     public String getMovieId() {
@@ -94,9 +109,26 @@ public class MovieDetail implements Parcelable {
         this.desc = desc;
     }
 
+    public ArrayList<MovieReview> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(ArrayList<MovieReview> reviews) {
+        this.reviews = reviews;
+    }
+
+
+    public ArrayList<MovieTrailer> getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(ArrayList<MovieTrailer> trailers) {
+        this.trailers = trailers;
+    }
+
     @Override
     public int describeContents() {
-        return 0;
+        return this.hashCode();
     }
 
     @Override
@@ -107,7 +139,8 @@ public class MovieDetail implements Parcelable {
         dest.writeString(release);
         dest.writeString(rate);
         dest.writeString(desc);
-
+        dest.writeTypedList(reviews);
+        dest.writeTypedList(trailers);
     }
 
     public static final Parcelable.Creator<MovieDetail> CREATOR

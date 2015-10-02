@@ -1,16 +1,12 @@
-package me.synology.ssray73.raymovie;
+package me.synology.ssray73.raymovie.core;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -37,7 +32,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
+import me.synology.ssray73.raymovie.R;
 
 
 /**
@@ -57,6 +53,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "LESSON4: onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -163,12 +160,14 @@ public class MainActivityFragment extends Fragment {
     public void updateMovie() {
         FetchMovieTask movieTask = new FetchMovieTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sort_pref = prefs.getString("movie_sort_order", "popularity.desc");
+        String sort_pref = prefs.getString(getActivity().getResources().getString(R.string.sort_order),
+                getActivity().getResources().getString(R.string.sort_order_popularity_desc));
         movieTask.execute(sort_pref);
     }
 
     @Override
     public void onStart() {
+        Log.d(LOG_TAG, "LESSON4: onStart");
         super.onStart();
         updateMovie();
     }
@@ -178,15 +177,14 @@ public class MainActivityFragment extends Fragment {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        final String MOVIE_RESULT = "results";
-        final String MOVIE_ID = "id";
-        final String MOVIE_TITLE = "original_title";
-        final String MOVIE_POSTER_PATH = "poster_path";
-        final String MOVIE_OVERVIEW = "overview";
-        final String MOVIE_RELEASE_DATE = "release_date";
-        final String MOVIE_VOTE_AVERAGE = "vote_average";
-        final String MOVIE_VOTE_COUNT = "vote_count";
-
+        final String MOVIE_RESULT = getActivity().getResources().getString(R.string.movieapi_result);
+        final String MOVIE_ID =  getActivity().getResources().getString(R.string.movieapi_id);
+        final String MOVIE_TITLE = getActivity().getResources().getString(R.string.movieapi_title);
+        final String MOVIE_POSTER_PATH = getActivity().getResources().getString(R.string.movieapi_poster_path);
+        final String MOVIE_OVERVIEW = getActivity().getResources().getString(R.string.movieapi_overview);
+        final String MOVIE_RELEASE_DATE = getActivity().getResources().getString(R.string.movieapi_release_date);
+        final String MOVIE_VOTE_AVERAGE = getActivity().getResources().getString(R.string.movieapi_vote_average);
+        final String MOVIE_VOTE_COUNT = getActivity().getResources().getString(R.string.movieapi_vote_count);
 
 
 
@@ -229,9 +227,9 @@ public class MainActivityFragment extends Fragment {
             String movieJsonStr = null;
 
 
-            final String TMDB_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-            final String SORT_PARAM = "sort_by";
-            final String KEY_PARAM = "api_key";
+            final String TMDB_BASE_URL = getActivity().getResources().getString(R.string.movieapi_sort_baseurl);
+            final String SORT_PARAM = getActivity().getResources().getString(R.string.movieapi_sort);
+            final String KEY_PARAM = getActivity().getResources().getString(R.string.movieapi_key);
 
 
             String type = params[0];

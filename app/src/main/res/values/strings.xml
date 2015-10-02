@@ -12,4 +12,35 @@
     <string name="api_key" translatable="false">fe48c1c18c1a17e4ab15ed99b02fc412</string>
     <string name="empty_description">No description available.</string>
     <string name="fetch_data_fail">Cannot connect to the movie database, please make sure you have Internet connection.</string>
+    <string name="movieapi_id" translatable="false">id</string>
+    <string name="movieapi_title" translatable="false">original_title</string>
+    <string name="movieapi_poster_path" translatable="false">poster_path</string>
+    <string name="movieapi_overview" translatable="false">overview</string>
+    <string name="movieapi_release_date" translatable="false">release_date</string>
+    <string name="movieapi_vote_average" translatable="false">vote_average</string>
+    <string name="movieapi_vote_count" translatable="false">vote_count</string>
+    <string name="movieapi_key" translatable="false">api_key</string>
+    <string name="movieapi_detail_baseurl" translatable="false">http://api.themoviedb.org/3/movie/</string>
+    <string name="movieapi_result" translatable="false">results</string>
+    <string name="sort_order" translatable="false">movie_sort_order</string>
+    <string name="movieapi_sort" translatable="false">sort_by</string>
+    <string name="movieapi_sort_baseurl" translatable="false">http://api.themoviedb.org/3/discover/movie?</string>
+    <string name="movieapi_path_videos" translatable="false" >videos</string>
+    <string name="movieapi_path_reviews" translatable="false">reviews</string>
+    <string name="button_favorite" translatable="false">Marks as favorite</string>
+    <string name="detail_trailer" translatable="false">Trailers:</string>
+    <string name="detail_review" translatable="false">Reviews:</string>
+    <string name="movieapi_review_id" translatable="false">id</string>
+    <string name="movieapi_review_author" translatable="false">author</string>
+    <string name="movieapi_review_content" translatable="false">content</string>
+    <string name="movieapi_review_url" translatable="false">url</string>
+    <string name="movieapi_review_results" translatable="false">results</string>
+    <string name="movieapi_trailer_results" translatable="false">results</string>
+    <string name="movieapi_trailer_id" translatable="false">id</string>
+    <string name="movieapi_trailer_key" translatable="false">key</string>
+    <string name="movieapi_trailer_name" translatable="false">name</string>
+    <string name="movieapi_trailer_site" translatable="false">site</string>
+    <string name="movieapi_trailer_size" translatable="false">size</string>
+    <string name="movieapi_trailer_type" translatable="false">type</string>
+    <string name="movieapi_iso" translatable="false">iso_639_1</string>
 </resources>

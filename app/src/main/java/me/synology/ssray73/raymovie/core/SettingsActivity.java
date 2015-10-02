@@ -1,4 +1,4 @@
-package me.synology.ssray73.raymovie;
+package me.synology.ssray73.raymovie.core;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -19,6 +19,8 @@ import android.text.TextUtils;
 
 
 import java.util.List;
+
+import me.synology.ssray73.raymovie.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

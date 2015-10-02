@@ -3,22 +3,22 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="me.synology.ssray73.raymovie.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="me.synology.ssray73.raymovie.core.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general"
         />
 
     <header
-        android:fragment="me.synology.ssray73.raymovie.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="me.synology.ssray73.raymovie.core.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="me.synology.ssray73.raymovie.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="me.synology.ssray73.raymovie.core.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" /><header
-        android:fragment="me.synology.ssray73.raymovie.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="me.synology.ssray73.raymovie.core.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" /><header
-        android:fragment="me.synology.ssray73.raymovie.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="me.synology.ssray73.raymovie.core.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" /><header
-        android:fragment="me.synology.ssray73.raymovie.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="me.synology.ssray73.raymovie.core.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
 </preference-headers>
